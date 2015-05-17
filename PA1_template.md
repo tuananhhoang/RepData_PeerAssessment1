@@ -122,11 +122,12 @@ median(data3$steps)
 ```r
 newActivity$WEND <- factor(newActivity$datetime$wday == 0 | newActivity$datetime$wday == 6,levels=c(TRUE,FALSE),labels=c("weekend","weekday"))
 par(mfrow=c(2,1))
+par(mar = c(2, 2, 1, 2))
 
 weekendAct <- aggregate(steps ~ interval, data=subset(newActivity, WEND == "weekend"), mean)
 weekdayAct <- aggregate(steps ~ interval, subset(newActivity, WEND == "weekday"), mean)
-plot(weekendAct$interval, weekendAct$steps, type="l", xlab= "Interval", ylab= "Number of steps", col="blue" , lwd=2)
-plot(weekdayAct$interval, weekendAct$steps, type="l", xlab= "Interval", ylab= "Number of steps", col="blue" , lwd=2)
+plot(weekendAct$interval, weekendAct$steps, type="l", main="Weekend", xlab= "Interval", ylab= "Number of steps", col="blue" , lwd=2)
+plot(weekdayAct$interval, weekendAct$steps, type="l", main="Weekday", xlab= "Interval", ylab= "Number of steps", col="blue" , lwd=2)
 ```
 
 ![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
