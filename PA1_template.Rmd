@@ -6,31 +6,48 @@ date: "Sunday, May 17, 2015"
 
 ##Loading and preprocessing the data
 
+###Loading data
 ```{r}
 setwd("D:\\Projects\\training\\DataScience Specilization Certificate\\Reproducible Research")
 activity <- read.csv("activity.csv", header=TRUE,sep=",",na.strings="NA", colClasses=c("numeric", "character", "numeric"))
+```
+
+###Convert date time data to the corresponding data type
+```{r}
 activity$hour <- activity$interval %/% 100
 activity$minute <- activity$interval %% 100
-activity$i <- activity$hour*60 + activity$minute
 activity$datetime <- strptime(paste(activity$date, activity$hour, activity$minute), format="%Y-%m-%d %H %M")
 activity$date <- as.Date(activity$date, format="%Y-%m-%d")
 ```
 
 ##What is mean total number of steps taken per day?
+###Calculate the total number of steps taken per day
+```{r, echo=TRUE, warning=FALSE}
+data1 <- aggregate(steps ~ date, activity, sum)
+```
 
+###Make a histogram of the total number of steps taken each day
 ```{r, echo=TRUE, warning=FALSE}
 library(ggplot2)
-data1 <- aggregate(steps ~ date, activity, sum)
 qplot(steps, data = data1)
+```
+
+###Calculate and report the mean and median of the total number of steps taken per day
+```{r, echo=TRUE, warning=FALSE}
 mean(data1$steps)
 median(data1$steps)
 ```
 
 ##What is the average daily activity pattern?
 
+###Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 ```{r, echo=TRUE, warning=FALSE}
-data2 <- aggregate(steps ~ i + interval, activity, mean)
+data2 <- aggregate(steps ~ interval, activity, mean)
 plot(data2$interval, data2$steps, type="l", xlab= "Interval", ylab= "Number of steps", col="green" , lwd=2)
+```
+
+###Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
+```{r, echo=TRUE, warning=FALSE}
 with(data2, interval[steps == max(steps)])
 ```
 
@@ -41,7 +58,7 @@ sum(is.na(activity$steps))
 newActivity <- activity
 ```
 
-Missing value at an interval is filled by the average value of steps at this interval
+###Missing value at an interval is filled by the average value of steps at this interval
 
 ```{r, echo=TRUE, warning=FALSE}
 newActivity$steps[which(is.na(newActivity$steps) & match(data2$interval, newActivity$interval))] <- data2$steps

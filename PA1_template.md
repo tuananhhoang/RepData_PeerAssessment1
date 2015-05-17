@@ -6,23 +6,33 @@ date: "Sunday, May 17, 2015"
 
 ##Loading and preprocessing the data
 
+###Loading data
 
 ```r
 setwd("D:\\Projects\\training\\DataScience Specilization Certificate\\Reproducible Research")
 activity <- read.csv("activity.csv", header=TRUE,sep=",",na.strings="NA", colClasses=c("numeric", "character", "numeric"))
+```
+
+###Convert date time data to the corresponding data type
+
+```r
 activity$hour <- activity$interval %/% 100
 activity$minute <- activity$interval %% 100
-activity$i <- activity$hour*60 + activity$minute
 activity$datetime <- strptime(paste(activity$date, activity$hour, activity$minute), format="%Y-%m-%d %H %M")
 activity$date <- as.Date(activity$date, format="%Y-%m-%d")
 ```
 
 ##What is mean total number of steps taken per day?
+###Calculate the total number of steps taken per day
 
+```r
+data1 <- aggregate(steps ~ date, activity, sum)
+```
+
+###Make a histogram of the total number of steps taken each day
 
 ```r
 library(ggplot2)
-data1 <- aggregate(steps ~ date, activity, sum)
 qplot(steps, data = data1)
 ```
 
@@ -30,7 +40,9 @@ qplot(steps, data = data1)
 ## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 ```
 
-![plot of chunk unnamed-chunk-2](figure/unnamed-chunk-2-1.png) 
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
+###Calculate and report the mean and median of the total number of steps taken per day
 
 ```r
 mean(data1$steps)
@@ -50,13 +62,16 @@ median(data1$steps)
 
 ##What is the average daily activity pattern?
 
+###Make a time series plot (i.e. type = "l") of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
 
 ```r
-data2 <- aggregate(steps ~ i + interval, activity, mean)
+data2 <- aggregate(steps ~ interval, activity, mean)
 plot(data2$interval, data2$steps, type="l", xlab= "Interval", ylab= "Number of steps", col="green" , lwd=2)
 ```
 
-![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+
+###Which 5-minute interval, on average across all the days in the dataset, contains the maximum number of steps?
 
 ```r
 with(data2, interval[steps == max(steps)])
@@ -81,7 +96,7 @@ sum(is.na(activity$steps))
 newActivity <- activity
 ```
 
-Missing value at an interval is filled by the average value of steps at this interval
+###Missing value at an interval is filled by the average value of steps at this interval
 
 
 ```r
@@ -98,7 +113,7 @@ qplot(steps, data = data3)
 ## stat_bin: binwidth defaulted to range/30. Use 'binwidth = x' to adjust this.
 ```
 
-![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+![plot of chunk unnamed-chunk-10](figure/unnamed-chunk-10-1.png) 
 
 ```r
 mean(data3$steps)
@@ -130,4 +145,4 @@ plot(weekendAct$interval, weekendAct$steps, type="l", main="Weekend", xlab= "Int
 plot(weekdayAct$interval, weekendAct$steps, type="l", main="Weekday", xlab= "Interval", ylab= "Number of steps", col="blue" , lwd=2)
 ```
 
-![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
+![plot of chunk unnamed-chunk-11](figure/unnamed-chunk-11-1.png) 
